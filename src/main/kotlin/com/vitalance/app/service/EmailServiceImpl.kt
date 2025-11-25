@@ -8,8 +8,13 @@ import org.springframework.stereotype.Service
 @Service
 class EmailServiceImpl(private val mailSender: JavaMailSender) : EmailService {
 
+    // O e-mail remetente vem do seu .env / configuração
     @Value("\${spring.mail.username}")
     private lateinit var senderEmail: String
+
+    // URL base do frontend (troque para o seu domínio/URL de produção)
+    @Value("\${frontend.url}")
+    private lateinit var frontendUrl: String
 
     override fun sendEmail(message: SimpleMailMessage) {
         mailSender.send(message)
@@ -22,7 +27,8 @@ class EmailServiceImpl(private val mailSender: JavaMailSender) : EmailService {
         message.from = senderEmail
         message.setTo(toEmail)
 
-        val resetLink = "http://localhost:3000/reset-password?token=$token"
+        // Link de redefinição para produção
+        val resetLink = "$frontendUrl/reset-password?token=$token"
 
         message.text = """
             Prezado(a) usuário(a),
